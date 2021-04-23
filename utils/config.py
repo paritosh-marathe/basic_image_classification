@@ -1,0 +1,11 @@
+EPOCHS = 50
+BATCH_SIZE = 16
+NUM_CLASSES = 5
+im_height = 224
+im_width = 224
+channels = 3
+model_dir = "model.h5"
+train_dir = "dataset/train"
+valid_dir = "dataset/valid"
+test_dir = "dataset/test"
+test_image_path = ""
