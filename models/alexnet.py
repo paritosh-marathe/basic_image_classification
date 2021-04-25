@@ -19,13 +19,12 @@ class Alexnet(tf.keras.Model):
     def __init__(self):
         super(Alexnet, self).__init__()
         self.num_classes = NUM_CLASSES
+        self.act=layers.Activation('relu')
 
     def call(self, input):
-        x = layers.Conv2D(filters=96, input_shape=(im_height, im_width, channels),
-                          kernel_size=(11, 11), strides=(4, 4),
-                          padding='same')(input)
-        x = layers.BatchNormalization()(x)
-        x = layers.Activation('relu')(x)
+        x = layers.InputLayer(input_shape=(im_height, im_width, channels))(input)
+        x = ConvBlock(filters=96,kernel=(11,11),strides=(4,4),padding='same',batch_norm=True)(x)
+        # x = layers.Activation('relu')(x)
         x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2),
                              padding='same')(x)
         # Conv block 2

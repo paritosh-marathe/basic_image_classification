@@ -1,5 +1,5 @@
 import tensorflow as tf
-import config
+import utils.config
 
 
 def prep_datasets():

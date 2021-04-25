@@ -3,7 +3,7 @@ import numpy as np
 import math
 from data import prep_datasets
 from models.alexnet import Alexnet
-from config import EPOCHS, BATCH_SIZE, model_dir
+from utils.config import EPOCHS, BATCH_SIZE, model_dir
 
 def get_model():
     model = Alexnet()
