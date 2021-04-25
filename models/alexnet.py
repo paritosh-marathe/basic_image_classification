@@ -22,8 +22,8 @@ class Alexnet(tf.keras.Model):
         self.act=layers.Activation('relu')
 
     def call(self, input):
-        x = layers.InputLayer(input_shape=(im_height, im_width, channels))(input)
-        x = ConvBlock(filters=96,kernel=(11,11),strides=(4,4),padding='same',batch_norm=True)(x)
+        x = tf.keras.Input(shape=(im_height, im_width, channels))
+        x = ConvBlock(filters=96,kernel=(11,11),strides=(4,4),padding='same',batch_norm=True)(input)
         # x = layers.Activation('relu')(x)
         x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2),
                              padding='same')(x)
