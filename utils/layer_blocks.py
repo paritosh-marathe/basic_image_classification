@@ -34,7 +34,7 @@ class ConvBlocks(Layer):
         self.cfg = cfg
         self.batch_norm = batch_norm
 
-    def call(self, x):
+    def call(self, inputs):
         layer = []
         for v in self.cfg:
             if v == 'M':
@@ -88,9 +88,9 @@ class ConvBlock(Layer):
         self.bn = layers.BatchNormalization(axis=channel_axis)
         self.activate = activation
 
-    def call(self, x, training=True):
-        x = self.conv(x)
+    def call(self, inputs, training=True):
+        x = self.conv(inputs)
         if self.batch_norm:
             x = self.bn(x)
-        x = layers.Activation(self.activate)
+        x = layers.Activation(self.activate)(x)
         return x
