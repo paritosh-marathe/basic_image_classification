@@ -19,34 +19,44 @@ class Alexnet(tf.keras.Model):
     def __init__(self):
         super(Alexnet, self).__init__()
         self.num_classes = NUM_CLASSES
+        self.block1 = ConvBlock(filters=96, kernel=(11, 11), strides=(4, 4), padding='same', batch_norm=True)
+        self.block2 = ConvBlock(filters=256, kernel=(5, 5), padding='same', batch_norm=True)
+        self.block3 = ConvBlock(filters=384, kernel=(3, 3), batch_norm=True)
+        self.block4 = ConvBlock(filters=384, kernel=(3, 3), batch_norm=True)
+        self.block5 = ConvBlock(filters=384, kernel=(3, 3), batch_norm=False)
+        self.block6 = ConvBlock(filters=256, kernel=(3, 3), padding='same')
+        self.pool = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same')
+        self.flatten = layers.Flatten()
+        self.classifier = tf.keras.Sequential([
+            layers.Dense(4096),
+            layers.Activation('relu'),
+            layers.Dropout(0.5),
+            layers.Dense(4096),
+            layers.Activation('relu'),
+            layers.Dropout(0.5),
+            layers.Dense(self.num_classes),
+        ])
 
-    def call(self, input):
+    def call(self, inputs, training=False):
         x = tf.keras.Input(shape=(im_height, im_width, channels))
-        x = ConvBlock(filters=96, kernel=(11, 11), strides=(4, 4), padding='same', batch_norm=True)(input)
+        x = self.block1(inputs)
         # x = layers.Activation('relu')(x)
         x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2),
                              padding='same')(x)
         # Conv block 2
-        x = ConvBlock(filters=256, kernel=(5, 5), padding='same',
-                      batch_norm=True)(x)
-        x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same')(x)
+        x = self.block2(x)
+        x = self.pool(x)
         # Conv block 3
-        x = ConvBlock(filters=384, kernel=(3, 3), batch_norm=True)(x)
+        x = self.block3(x)
         # Conv block 4
-        x = ConvBlock(filters=384, kernel=(3, 3), batch_norm=True)(x)
+        x = self.block4(x)
         # Conv block 5
-        x = ConvBlock(filters=384, kernel=(3, 3), batch_norm=False)(x)
-        x = layers.Conv2D(filters=256, kernel_size=(3, 3), strides=(1, 1),
-                          padding='same')(x)
-        x = layers.Activation('relu')(x)
-        x = layers.MaxPool2D(pool_size=(2, 2), strides=(2, 2), padding='same')(x)
-        x = layers.Flatten()(x)
+        x = self.block5(x)
+        # Conv block 6
+        x = self.block6(x)
+        x = self.pool(x)
+        x = self.flatten(x)
         # Fully connected layer
-        x = layers.Dense(4096)(x)
-        x = layers.Activation('relu')(x)
-        x = layers.Dropout(0.4)(x)
-        x = layers.Dense(4096, activation='relu')(x)
-        x = layers.Activation('relu')(x)
-        x = layers.Dense(self.num_classes)(x)
-        x = layers.Activation('softmax')(x)
+        x = self.classifier(x)
+        x = layers.Activation('softmax')
         return x

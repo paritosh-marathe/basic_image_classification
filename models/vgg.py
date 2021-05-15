@@ -27,11 +27,12 @@ class VGG(Model):
             layers.Dense(NUM_CLASSES)
         ])
 
-    def call(self, x):
+    def call(self, inputs):
         x = tf.keras.Input(shape=(im_height, im_width, channels))
-        x = self.features(x)
+        x = self.features(inputs)
         x = layers.Flatten()
         x = self.classifier(x)
+        x = layers.Activation('softmax')
         return x
 
 
